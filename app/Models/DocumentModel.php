@@ -12,7 +12,7 @@ class DocumentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_id', 'folder_id', 'title', 'content'];
+    protected $allowedFields    = ['user_id', 'folder_id', 'title', 'content', 'header_content', 'footer_content', 'page_settings'];
 
     // Dates
     protected $useTimestamps = true;

@@ -82,10 +82,26 @@ class Documents extends BaseController
             throw PageNotFoundException::forPageNotFound('Document not found or you do not have permission to view it.');
         }
 
+
+        $headerContent = !empty($doc['header_content']) ? json_decode($doc['header_content'], true) : null;
+        $footerContent = !empty($doc['footer_content']) ? json_decode($doc['footer_content'], true) : null;
+        $pageSettings  = !empty($doc['page_settings']) ? json_decode($doc['page_settings'], true) : null;
+
         $data = [
-            'pageTitle' => esc($doc['title']) . ' — OfficeSpace Docs',
-            'doc'       => $doc,
-            'user'      => [
+            'pageTitle'     => esc($doc['title']) . ' — OfficeSpace Docs',
+            'doc'           => $doc,
+            'headerContent' => is_array($headerContent) ? $headerContent : ['left' => '', 'right' => ''],
+            'footerContent' => is_array($footerContent) ? $footerContent : ['left' => '', 'right' => '{page}'],
+            'pageSettings'  => is_array($pageSettings) ? $pageSettings : [
+                'paperSize'          => 'A4',
+                'orientation'        => 'portrait',
+                'marginTop'          => 60,
+                'marginBottom'       => 60,
+                'marginLeft'         => 70,
+                'marginRight'        => 70,
+                'differentFirstPage' => false,
+            ],
+            'user'          => [
                 'id'           => $userId,
                 'name'         => session()->get('name') ?? 'Workspace Member',
                 'email'        => session()->get('email') ?? '',
@@ -97,7 +113,7 @@ class Documents extends BaseController
     }
 
     /**
-     * Autosave endpoint for title and rich-text content via AJAX.
+     * Autosave endpoint for title, rich-text content, header/footer, and page settings via AJAX.
      */
     public function save(int $id): ResponseInterface
     {
@@ -136,10 +152,53 @@ class Documents extends BaseController
         // Sanitize rich-text content
         $sanitizedContent = sanitize_rich_text($rawContent);
 
-        $updateSuccess = $this->documentModel->update($doc['id'], [
+        $updateData = [
             'title'   => $title,
             'content' => $sanitizedContent,
-        ]);
+        ];
+
+        // Process optional header_content
+        $rawHeader = $json['header_content'] ?? $this->request->getPost('header_content');
+        if ($rawHeader !== null) {
+            $headerArr = is_array($rawHeader) ? $rawHeader : json_decode((string) $rawHeader, true);
+            if (is_array($headerArr)) {
+                $updateData['header_content'] = json_encode([
+                    'left'  => sanitize_rich_text((string) ($headerArr['left'] ?? '')),
+                    'right' => sanitize_rich_text((string) ($headerArr['right'] ?? '')),
+                ], JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        // Process optional footer_content
+        $rawFooter = $json['footer_content'] ?? $this->request->getPost('footer_content');
+        if ($rawFooter !== null) {
+            $footerArr = is_array($rawFooter) ? $rawFooter : json_decode((string) $rawFooter, true);
+            if (is_array($footerArr)) {
+                $updateData['footer_content'] = json_encode([
+                    'left'  => sanitize_rich_text((string) ($footerArr['left'] ?? '')),
+                    'right' => sanitize_rich_text((string) ($footerArr['right'] ?? '')),
+                ], JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        // Process optional page_settings
+        $rawSettings = $json['page_settings'] ?? $this->request->getPost('page_settings');
+        if ($rawSettings !== null) {
+            $settingsArr = is_array($rawSettings) ? $rawSettings : json_decode((string) $rawSettings, true);
+            if (is_array($settingsArr)) {
+                $updateData['page_settings'] = json_encode([
+                    'paperSize'          => in_array($settingsArr['paperSize'] ?? 'A4', ['A4', 'Letter'], true) ? $settingsArr['paperSize'] : 'A4',
+                    'orientation'        => in_array($settingsArr['orientation'] ?? 'portrait', ['portrait', 'landscape'], true) ? $settingsArr['orientation'] : 'portrait',
+                    'marginTop'          => max(10, min(200, (int) ($settingsArr['marginTop'] ?? 60))),
+                    'marginBottom'       => max(10, min(200, (int) ($settingsArr['marginBottom'] ?? 60))),
+                    'marginLeft'         => max(10, min(200, (int) ($settingsArr['marginLeft'] ?? 70))),
+                    'marginRight'        => max(10, min(200, (int) ($settingsArr['marginRight'] ?? 70))),
+                    'differentFirstPage' => !empty($settingsArr['differentFirstPage']),
+                ], JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        $updateSuccess = $this->documentModel->update($doc['id'], $updateData);
 
         if (!$updateSuccess) {
             return $this->response->setStatusCode(500)->setJSON([

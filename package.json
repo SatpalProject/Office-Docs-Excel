@@ -11,6 +11,10 @@
     "@tiptap/starter-kit": "^2.2.4",
     "tiptap-pagination-plus": "^2.1.0"
   },
+  "scripts": {
+    "postinstall": "node patch_pagination.js",
+    "bundle": "node patch_pagination.js && esbuild tiptap_entry.js --bundle --minify --outfile=public/assets/vendor/tiptap.bundle.min.js"
+  },
   "devDependencies": {
     "esbuild": "^0.28.2"
   }

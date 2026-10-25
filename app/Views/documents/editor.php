@@ -49,10 +49,51 @@
             </div>
 
             <div class="editor-actions-right">
+                <!-- Manual Save Action -->
+                <button type="button" id="btnManualSave" class="btn-header-action" title="Save changes (Ctrl+S)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Save</span>
+                </button>
+
+                <!-- Page Setup Button -->
+                <button type="button" id="btnPageSetup" class="btn-header-action" title="Page Setup (A4/Letter, Margins, Orientation)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                        <line x1="8" y1="10" x2="16" y2="10"></line>
+                        <line x1="8" y1="14" x2="12" y2="14"></line>
+                    </svg>
+                    <span>Page Setup</span>
+                </button>
+
+                <!-- Header & Footer Button -->
+                <button type="button" id="btnHeaderFooter" class="btn-header-action" title="Header, Footer & Page Numbers">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16v3H4z"></path>
+                        <path d="M4 17h16v3H4z"></path>
+                        <line x1="4" y1="11" x2="20" y2="11" stroke-dasharray="2 2"></line>
+                    </svg>
+                    <span>Header & Footer</span>
+                </button>
+
+                <!-- Print Action -->
+                <button type="button" id="btnPrint" class="btn-header-action" title="Print document (Ctrl+P)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Print</span>
+                </button>
+
                 <!-- Export Dropdown -->
                 <div class="btn-export-dropdown">
                     <button type="button" id="exportDropdownBtn" class="btn-header-action" title="Export document options">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -83,7 +124,7 @@
                 </div>
 
                 <a href="<?= site_url('dashboard') ?>" class="btn-header-action" title="Return to Dashboard">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="7" height="7"></rect>
                         <rect x="14" y="3" width="7" height="7"></rect>
                         <rect x="14" y="14" width="7" height="7"></rect>
@@ -292,24 +333,218 @@
                     </svg>
                 </button>
             </div>
+
+            <div class="toolbar-separator"></div>
+
+            <!-- Zoom & Page Layout Quick Controls -->
+            <div class="toolbar-group">
+                <div class="zoom-picker-wrap">
+                    <span class="zoom-icon-label" title="Zoom level">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </span>
+                    <select id="zoomSelect" class="toolbar-select zoom-select" aria-label="Canvas Zoom">
+                        <option value="fit">Fit</option>
+                        <option value="50">50%</option>
+                        <option value="75">75%</option>
+                        <option value="90">90%</option>
+                        <option value="100" selected>100%</option>
+                        <option value="125">125%</option>
+                        <option value="150">150%</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Main Document Canvas -->
-    <main class="editor-workspace">
-        <div id="editorPaper" class="editor-paper" role="textbox" aria-multiline="true"></div>
+    <!-- Main Multi-Page A4 Document Canvas -->
+    <main class="editor-workspace" id="editorWorkspace">
+        <div id="editorZoomWrapper" class="editor-zoom-wrapper">
+            <div id="editorPaper" class="editor-paper" role="textbox" aria-multiline="true"></div>
+        </div>
     </main>
 
     <!-- Bottom Status Bar -->
     <footer class="editor-bottom-bar">
         <div class="editor-bottom-metrics">
+            <span id="pageCountDisplay" class="metric-pill">Page 1 of 1</span>
             <span id="wordCountDisplay" class="metric-pill">0 words</span>
             <span id="charCountDisplay" class="metric-pill">0 characters</span>
         </div>
-        <div>
-            <span>OfficeSpace Cloud &bull; MySQL Synced</span>
+        <div class="editor-bottom-info">
+            <span id="pageSizeDisplay">A4 &bull; Portrait</span>
+            <span class="info-dot">&bull;</span>
+            <span>OfficeSpace Cloud Synced</span>
         </div>
     </footer>
+
+    <!-- Page Setup Modal -->
+    <div id="pageSetupModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="pageSetupTitle">
+        <div class="modal-box modal-box-large">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                        <line x1="8" y1="10" x2="16" y2="10"></line>
+                    </svg>
+                    <h3 class="modal-title" id="pageSetupTitle">Page Setup</h3>
+                </div>
+                <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close modal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Orientation & Paper Size -->
+                <div class="modal-grid-2col">
+                    <div class="form-group">
+                        <label class="form-label" for="pageSetupOrientation">Orientation</label>
+                        <div class="radio-card-group">
+                            <label class="radio-card">
+                                <input type="radio" name="pageOrientation" value="portrait" id="orientPortrait" checked>
+                                <div class="radio-card-content">
+                                    <div class="orient-icon portrait-icon"></div>
+                                    <span>Portrait</span>
+                                </div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="pageOrientation" value="landscape" id="orientLandscape">
+                                <div class="radio-card-content">
+                                    <div class="orient-icon landscape-icon"></div>
+                                    <span>Landscape</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pageSetupPaperSize">Paper Size</label>
+                        <select id="pageSetupPaperSize" class="form-control">
+                            <option value="A4" selected>A4 (210 × 297 mm)</option>
+                            <option value="Letter">Letter (8.5 × 11 in)</option>
+                        </select>
+                        <span class="form-help-text">Standard ISO 216 dimensions for crisp printing & PDF export.</span>
+                    </div>
+                </div>
+
+                <!-- Margins Section -->
+                <div class="form-section-divider">
+                    <span>Margins</span>
+                </div>
+
+                <div class="margin-preset-buttons">
+                    <button type="button" class="btn-preset-margin active" data-preset="normal">Normal (25 mm / 1 in)</button>
+                    <button type="button" class="btn-preset-margin" data-preset="narrow">Narrow (12.7 mm / 0.5 in)</button>
+                    <button type="button" class="btn-preset-margin" data-preset="wide">Wide (35 mm / 1.4 in)</button>
+                </div>
+
+                <div class="modal-grid-4col">
+                    <div class="form-group">
+                        <label class="form-label" for="marginTopInput">Top (px)</label>
+                        <input type="number" id="marginTopInput" class="form-control" min="20" max="200" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="marginBottomInput">Bottom (px)</label>
+                        <input type="number" id="marginBottomInput" class="form-control" min="20" max="200" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="marginLeftInput">Left (px)</label>
+                        <input type="number" id="marginLeftInput" class="form-control" min="20" max="200" value="70">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="marginRightInput">Right (px)</label>
+                        <input type="number" id="marginRightInput" class="form-control" min="20" max="200" value="70">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel btn-close-modal">Cancel</button>
+                <button type="button" id="btnApplyPageSetup" class="btn-modal-action">Apply Page Setup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header & Footer Modal -->
+    <div id="headerFooterModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="hfModalTitle">
+        <div class="modal-box modal-box-large">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16v3H4z"></path>
+                        <path d="M4 17h16v3H4z"></path>
+                        <line x1="4" y1="11" x2="20" y2="11" stroke-dasharray="2 2"></line>
+                    </svg>
+                    <h3 class="modal-title" id="hfModalTitle">Header, Footer & Page Numbers</h3>
+                </div>
+                <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close modal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Header Controls -->
+                <div class="form-section-divider">
+                    <span>Header Content (Appears at top of pages)</span>
+                </div>
+                <div class="modal-grid-2col">
+                    <div class="form-group">
+                        <label class="form-label" for="headerLeftInput">Header Left</label>
+                        <input type="text" id="headerLeftInput" class="form-control" placeholder="e.g. Document Title or Company Name" maxlength="200">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="headerRightInput">Header Right</label>
+                        <input type="text" id="headerRightInput" class="form-control" placeholder="e.g. Confidential, Date or {page}" maxlength="200">
+                    </div>
+                </div>
+
+                <!-- Footer Controls -->
+                <div class="form-section-divider">
+                    <span>Footer Content & Page Numbers (Appears at bottom of pages)</span>
+                </div>
+                <div class="modal-grid-2col">
+                    <div class="form-group">
+                        <label class="form-label" for="footerLeftInput">Footer Left</label>
+                        <input type="text" id="footerLeftInput" class="form-control" placeholder="e.g. OfficeSpace Cloud Workspace" maxlength="200">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="footerRightInput">Footer Right / Page Number</label>
+                        <input type="text" id="footerRightInput" class="form-control" placeholder="e.g. {page} or Page {page} of {total}" maxlength="200">
+                        <div class="quick-tags-row">
+                            <span class="quick-tag-label">Insert variable:</span>
+                            <button type="button" class="btn-quick-tag" data-tag="{page}">Number (1, 2, 3)</button>
+                            <button type="button" class="btn-quick-tag" data-tag="Page {page} of {total}">Page 1 of 5</button>
+                            <button type="button" class="btn-quick-tag" data-tag="">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- First Page Customization -->
+                <div class="form-section-divider">
+                    <span>Options</span>
+                </div>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="differentFirstPageCheck">
+                        <span>Different first page (suppress header & footer on cover page)</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnClearHeaderFooter" class="btn-modal-cancel" style="margin-right:auto; color:#ef4444;">Remove All</button>
+                <button type="button" class="btn-modal-cancel btn-close-modal">Cancel</button>
+                <button type="button" id="btnApplyHeaderFooter" class="btn-modal-action">Apply Changes</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Configuration payload for Editor JS -->
     <script>
@@ -318,7 +553,18 @@
             saveUrl: '<?= site_url("documents/save/{$doc['id']}") ?>',
             csrfTokenName: '<?= csrf_token() ?>',
             csrfHash: '<?= csrf_hash() ?>',
-            initialContent: <?= json_encode($doc['content'] ?? '<p></p>') ?>
+            initialContent: <?= json_encode($doc['content'] ?? '<p></p>') ?>,
+            headerContent: <?= json_encode($headerContent ?? ['left' => '', 'right' => '']) ?>,
+            footerContent: <?= json_encode($footerContent ?? ['left' => '', 'right' => '{page}']) ?>,
+            pageSettings: <?= json_encode($pageSettings ?? [
+                'paperSize'          => 'A4',
+                'orientation'        => 'portrait',
+                'marginTop'          => 60,
+                'marginBottom'       => 60,
+                'marginLeft'         => 70,
+                'marginRight'        => 70,
+                'differentFirstPage' => false,
+            ]) ?>
         };
     </script>
 
