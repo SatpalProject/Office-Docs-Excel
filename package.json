@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@tiptap/core": "^2.2.4",
+    "@tiptap/extension-character-count": "^2.2.4",
+    "@tiptap/extension-color": "^2.2.4",
+    "@tiptap/extension-highlight": "^2.2.4",
+    "@tiptap/extension-link": "^2.2.4",
+    "@tiptap/extension-text-align": "^2.2.4",
+    "@tiptap/extension-text-style": "^2.2.4",
+    "@tiptap/extension-underline": "^2.2.4",
+    "@tiptap/starter-kit": "^2.2.4",
+    "tiptap-pagination-plus": "^2.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

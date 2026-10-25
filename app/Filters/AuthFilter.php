@@ -27,6 +27,8 @@ class AuthFilter implements FilterInterface
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // No action needed after request
+        // Prevent browser caching of sensitive authenticated content (e.g., documents, sheets, dashboard)
+        $response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->setHeader('Pragma', 'no-cache');
     }
 }

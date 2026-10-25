@@ -3,7 +3,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Phase 2 Preview Notice Modal
+    // Phase Modal (for Spreadsheet Preview)
     const modal = document.getElementById('phaseModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDesc');
@@ -30,105 +30,174 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Toast helper
-    function showToast(message, type = 'info') {
-        let container = document.getElementById('toastContainer');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'toastContainer';
-            container.className = 'toast-container';
-            document.body.appendChild(container);
-        }
-
-        const toast = document.createElement('div');
-        toast.className = 'toast-msg';
-        toast.innerHTML = `
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            <span>${message}</span>
-        `;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(8px)';
-            toast.style.transition = 'all 200ms ease';
-            setTimeout(() => toast.remove(), 250);
-        }, 3200);
-    }
-
-    // Attach click events to creation buttons & template chips
-    document.querySelectorAll('[data-create-type]').forEach(btn => {
+    // Spreadsheet creation triggers Phase 4 preview
+    document.querySelectorAll('[data-create-type="spreadsheet"]').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            const type = this.getAttribute('data-create-type');
             const template = this.getAttribute('data-template') || 'Blank';
+            showModal(
+                'Spreadsheet Engine (Phase 4 Preview)',
+                `You selected "${template}". The grid calculation engine with formulas, cells, and rows is scheduled for Phase 4.`
+            );
+        });
+    });
 
-            if (type === 'document') {
-                showModal(
-                    'Document Editor (Phase 2 Preview)',
-                    `You selected to create "${template}". The full rich-text document editor with real-time formatting, toolbar, and auto-save will be activated in Phase 2.`
-                );
-            } else if (type === 'spreadsheet') {
-                showModal(
-                    'Spreadsheet Engine (Phase 2 Preview)',
-                    `You selected to create "${template}". The grid calculation engine with rows, columns, formulas, and cells will be activated in Phase 2.`
-                );
+    // Rename Modal Handling
+    const renameModal = document.getElementById('renameDocModal');
+    const renameForm = document.getElementById('renameDocForm');
+    const renameTitleInput = document.getElementById('renameDocTitle');
+    const renameModalTitle = document.getElementById('renameModalTitle');
+
+    document.querySelectorAll('.btn-open-rename').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            const title = this.getAttribute('data-title');
+            const type = this.getAttribute('data-type') || 'document';
+            const controller = type === 'spreadsheet' ? 'spreadsheets' : 'documents';
+
+            if (renameForm) {
+                renameForm.action = window.location.origin + window.location.pathname.replace(/\/dashboard.*|\/index.php.*|\/$/, '') + `/index.php/${controller}/rename/` + id;
+            }
+            if (renameTitleInput) {
+                renameTitleInput.value = title;
+            }
+            if (renameModalTitle) {
+                renameModalTitle.textContent = type === 'spreadsheet' ? 'Rename Spreadsheet' : 'Rename Document';
+            }
+            if (renameModal) {
+                renameModal.classList.add('open');
+                setTimeout(() => renameTitleInput && renameTitleInput.focus(), 100);
             }
         });
     });
 
-    // File Tabs Filter Simulation
-    const tabButtons = document.querySelectorAll('.tab-filter-btn');
-    tabButtons.forEach(tab => {
-        tab.addEventListener('click', function () {
-            tabButtons.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            const tabName = this.getAttribute('data-tab');
-            showToast(`Filter applied: ${this.textContent.trim().split(' ')[0]}`);
+    // Delete Modal Handling
+    const deleteModal = document.getElementById('deleteDocModal');
+    const deleteForm = document.getElementById('deleteDocForm');
+    const deleteTitleDisplay = document.getElementById('deleteDocTitle');
+    const deleteModalTitle = document.getElementById('deleteModalTitle');
+
+    document.querySelectorAll('.btn-open-delete').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            const title = this.getAttribute('data-title');
+            const type = this.getAttribute('data-type') || 'document';
+            const controller = type === 'spreadsheet' ? 'spreadsheets' : 'documents';
+
+            if (deleteForm) {
+                deleteForm.action = window.location.origin + window.location.pathname.replace(/\/dashboard.*|\/index.php.*|\/$/, '') + `/index.php/${controller}/delete/` + id;
+            }
+            if (deleteTitleDisplay) {
+                deleteTitleDisplay.textContent = `"${title}"`;
+            }
+            if (deleteModalTitle) {
+                deleteModalTitle.textContent = type === 'spreadsheet' ? 'Delete Spreadsheet' : 'Delete Document';
+            }
+            if (deleteModal) {
+                deleteModal.classList.add('open');
+            }
         });
+    });
+
+    // Close any modal via .btn-close-modal
+    document.querySelectorAll('.btn-close-modal').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (renameModal) renameModal.classList.remove('open');
+            if (deleteModal) deleteModal.classList.remove('open');
+        });
+    });
+
+    [renameModal, deleteModal].forEach(m => {
+        if (m) {
+            m.addEventListener('click', function (e) {
+                if (e.target === m) m.classList.remove('open');
+            });
+        }
     });
 
     // View Toggle (Grid / List)
     const viewButtons = document.querySelectorAll('.view-toggle-btn');
+    const filesContainer = document.getElementById('filesContainer');
+
     viewButtons.forEach(btn => {
         btn.addEventListener('click', function () {
             viewButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             const mode = this.getAttribute('data-view');
-            showToast(`Switched to ${mode} view`);
+
+            if (filesContainer) {
+                if (mode === 'list') {
+                    filesContainer.classList.remove('view-grid');
+                    filesContainer.classList.add('view-list');
+                } else {
+                    filesContainer.classList.remove('view-list');
+                    filesContainer.classList.add('view-grid');
+                }
+            }
         });
     });
 
-    // Global Search Focus Shortcut (Ctrl+K or Cmd+K)
-    const searchInput = document.getElementById('globalSearchInput');
-    window.addEventListener('keydown', function (e) {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-            e.preventDefault();
-            if (searchInput) {
-                searchInput.focus();
-                searchInput.select();
-            }
-        }
-        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
-            closeModal();
-        }
-    });
+    // Filtering by Tab & Search
+    const tabButtons = document.querySelectorAll('.tab-filter-btn');
+    const searchInput = document.getElementById('dashboardSearchInput');
+    const globalSearchInput = document.getElementById('globalSearchInput');
+    const fileCards = document.querySelectorAll('.file-item-card');
 
-    // Search filter simulation
-    if (searchInput) {
-        searchInput.addEventListener('input', function (e) {
-            const query = e.target.value.trim();
-            // When query is typed, we show empty state or matching
-            const emptyDesc = document.querySelector('.empty-state-desc');
-            if (emptyDesc && query.length > 0) {
-                emptyDesc.textContent = `No files matching "${query}". Try searching with different keywords.`;
-            } else if (emptyDesc) {
-                emptyDesc.textContent = 'Your workspace is ready. Start by creating a new document or spreadsheet above, or choose from a template.';
+    let currentTab = 'all';
+    let searchQuery = '';
+
+    function applyFileFilters() {
+        let visibleCount = 0;
+        fileCards.forEach(card => {
+            const cardType = card.getAttribute('data-type');
+            const cardTitle = card.getAttribute('data-title') || '';
+
+            const matchesTab = (currentTab === 'all' || cardType === currentTab);
+            const matchesSearch = (searchQuery === '' || cardTitle.includes(searchQuery));
+
+            if (matchesTab && matchesSearch) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
             }
         });
     }
+
+    tabButtons.forEach(tab => {
+        tab.addEventListener('click', function () {
+            tabButtons.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentTab = this.getAttribute('data-tab');
+            applyFileFilters();
+        });
+    });
+
+    function handleSearchInput(e) {
+        searchQuery = e.target.value.trim().toLowerCase();
+        applyFileFilters();
+    }
+
+    if (searchInput) searchInput.addEventListener('input', handleSearchInput);
+    if (globalSearchInput) globalSearchInput.addEventListener('input', handleSearchInput);
+
+    // Global Search Focus Shortcut (Ctrl+K or Cmd+K)
+    window.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            if (globalSearchInput) {
+                globalSearchInput.focus();
+                globalSearchInput.select();
+            }
+        }
+        if (e.key === 'Escape') {
+            closeModal();
+            if (renameModal) renameModal.classList.remove('open');
+            if (deleteModal) deleteModal.classList.remove('open');
+        }
+    });
 });

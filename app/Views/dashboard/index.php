@@ -66,7 +66,7 @@
     </div>
 
     <div class="creator-cards-grid">
-        <!-- New Document Card -->
+        <!-- New Document Card (Active Phase 3 Editor) -->
         <div class="creator-card doc-card">
             <div>
                 <div class="creator-card-header">
@@ -81,33 +81,39 @@
                     </div>
                     <div class="creator-info">
                         <h3>New Document</h3>
-                        <p>Write documents, memos, proposals, and notes with rich formatting and auto-saving.</p>
+                        <p>Write rich text documents with Tiptap formatting, cloud autosave, and export features.</p>
                     </div>
                 </div>
 
                 <div class="templates-row">
                     <div class="templates-label">Quick Templates</div>
                     <div class="templates-list">
-                        <?php foreach ($templates['documents'] as $tpl): ?>
-                            <button type="button" class="template-chip" data-create-type="document" data-template="<?= esc($tpl['title']) ?>">
-                                <span class="template-chip-tag doc-chip-tag"><?= esc($tpl['badge']) ?></span>
-                                <span><?= esc($tpl['title']) ?></span>
-                            </button>
-                        <?php endforeach; ?>
+                        <a href="<?= site_url('documents/create?template=blank_doc') ?>" class="template-chip">
+                            <span class="template-chip-tag doc-chip-tag">New</span>
+                            <span>Blank Document</span>
+                        </a>
+                        <a href="<?= site_url('documents/create?template=meeting_notes') ?>" class="template-chip">
+                            <span class="template-chip-tag doc-chip-tag">Template</span>
+                            <span>Meeting Notes</span>
+                        </a>
+                        <a href="<?= site_url('documents/create?template=project_brief') ?>" class="template-chip">
+                            <span class="template-chip-tag doc-chip-tag">Template</span>
+                            <span>Project Brief</span>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <button type="button" class="btn-primary-action btn-doc-create" data-create-type="document" data-template="Blank Document">
+            <a href="<?= site_url('documents/create?template=blank_doc') ?>" class="btn-primary-action btn-doc-create">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
                 <span>+ Blank Document</span>
-            </button>
+            </a>
         </div>
 
-        <!-- New Spreadsheet Card -->
+        <!-- New Spreadsheet Card (Active Phase 4 Editor) -->
         <div class="creator-card sheet-card">
             <div>
                 <div class="creator-card-header">
@@ -129,23 +135,29 @@
                 <div class="templates-row">
                     <div class="templates-label">Quick Templates</div>
                     <div class="templates-list">
-                        <?php foreach ($templates['spreadsheets'] as $tpl): ?>
-                            <button type="button" class="template-chip" data-create-type="spreadsheet" data-template="<?= esc($tpl['title']) ?>">
-                                <span class="template-chip-tag sheet-chip-tag"><?= esc($tpl['badge']) ?></span>
-                                <span><?= esc($tpl['title']) ?></span>
-                            </button>
-                        <?php endforeach; ?>
+                        <a href="<?= site_url('spreadsheets/create?template=blank_sheet') ?>" class="template-chip">
+                            <span class="template-chip-tag sheet-chip-tag">New</span>
+                            <span>Blank Sheet</span>
+                        </a>
+                        <a href="<?= site_url('spreadsheets/create?template=budget_planner') ?>" class="template-chip">
+                            <span class="template-chip-tag sheet-chip-tag">Template</span>
+                            <span>Budget Planner</span>
+                        </a>
+                        <a href="<?= site_url('spreadsheets/create?template=project_tracker') ?>" class="template-chip">
+                            <span class="template-chip-tag sheet-chip-tag">Template</span>
+                            <span>Task Tracker</span>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <button type="button" class="btn-primary-action btn-sheet-create" data-create-type="spreadsheet" data-template="Blank Spreadsheet">
+            <a href="<?= site_url('spreadsheets/create?template=blank_sheet') ?>" class="btn-primary-action btn-sheet-create">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
                 <span>+ Blank Spreadsheet</span>
-            </button>
+            </a>
         </div>
     </div>
 </section>
@@ -159,19 +171,13 @@
                 <span>All Files</span>
                 <span class="tab-count"><?= (int)($stats['totalFiles'] ?? 0) ?></span>
             </button>
-            <button type="button" class="tab-filter-btn" data-tab="documents" role="tab">
+            <button type="button" class="tab-filter-btn" data-tab="document" role="tab">
                 <span>Documents</span>
                 <span class="tab-count"><?= (int)($stats['totalDocuments'] ?? 0) ?></span>
             </button>
-            <button type="button" class="tab-filter-btn" data-tab="spreadsheets" role="tab">
+            <button type="button" class="tab-filter-btn" data-tab="spreadsheet" role="tab">
                 <span>Spreadsheets</span>
                 <span class="tab-count"><?= (int)($stats['totalSpreadsheets'] ?? 0) ?></span>
-            </button>
-            <button type="button" class="tab-filter-btn" data-tab="recent" role="tab">
-                <span>Recent</span>
-            </button>
-            <button type="button" class="tab-filter-btn" data-tab="starred" role="tab">
-                <span>Starred</span>
             </button>
         </div>
 
@@ -182,14 +188,8 @@
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input type="text" class="files-filter-input" placeholder="Filter files...">
+                <input type="text" id="dashboardSearchInput" class="files-filter-input" placeholder="Filter files...">
             </div>
-
-            <select class="sort-select" aria-label="Sort files">
-                <option value="modified">Last modified</option>
-                <option value="title">Title (A-Z)</option>
-                <option value="created">Created date</option>
-            </select>
 
             <div class="view-toggle-group" role="group" aria-label="View mode">
                 <button type="button" class="view-toggle-btn active" data-view="grid" title="Grid View">
@@ -216,8 +216,83 @@
 
     <!-- Files Container / Empty State -->
     <?php if (!empty($files)): ?>
-        <div class="files-grid">
-            <!-- Files listing will be rendered here in Phase 2 -->
+        <div id="filesContainer" class="files-grid view-grid">
+            <?php foreach ($files as $file): ?>
+                <div class="file-item-card" data-type="<?= esc($file['type']) ?>" data-title="<?= esc(strtolower($file['title'])) ?>">
+                    <div class="file-item-preview">
+                        <a href="<?= $file['type'] === 'document' ? site_url("documents/edit/{$file['id']}") : site_url("spreadsheets/edit/{$file['id']}") ?>" class="file-preview-link">
+                            <div class="file-preview-icon <?= $file['type'] === 'document' ? 'doc-preview-icon' : 'sheet-preview-icon' ?>">
+                                <?php if ($file['type'] === 'document'): ?>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    </svg>
+                                <?php else: ?>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                                        <line x1="3" y1="15" x2="21" y2="15"></line>
+                                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                                        <line x1="15" y1="3" x2="15" y2="21"></line>
+                                    </svg>
+                                <?php endif; ?>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="file-item-meta">
+                        <div class="file-title-wrap">
+                            <a href="<?= $file['type'] === 'document' ? site_url("documents/edit/{$file['id']}") : site_url("spreadsheets/edit/{$file['id']}") ?>" class="file-title-link" title="<?= esc($file['title']) ?>">
+                                <?= esc($file['title']) ?>
+                            </a>
+                            <span class="file-date-sub">Updated <?= date('M j, Y g:i A', strtotime($file['updated_at'])) ?></span>
+                        </div>
+
+                        <div class="file-item-actions">
+                            <?php if ($file['type'] === 'document'): ?>
+                                <a href="<?= site_url("documents/export/html/{$file['id']}") ?>" class="file-action-icon-btn" title="Download HTML">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </a>
+                            <?php else: ?>
+                                <a href="<?= site_url("spreadsheets/export/xlsx/{$file['id']}") ?>" class="file-action-icon-btn" title="Download Excel (.xlsx)">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                                    </svg>
+                                </a>
+                                <a href="<?= site_url("spreadsheets/export/csv/{$file['id']}") ?>" class="file-action-icon-btn" title="Download CSV (.csv)">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    </svg>
+                                </a>
+                            <?php endif; ?>
+
+                            <button type="button" class="file-action-icon-btn btn-open-rename" data-id="<?= (int)$file['id'] ?>" data-type="<?= esc($file['type']) ?>" data-title="<?= esc($file['title']) ?>" title="Rename <?= esc($file['type']) ?>">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="file-action-icon-btn btn-open-delete" data-id="<?= (int)$file['id'] ?>" data-type="<?= esc($file['type']) ?>" data-title="<?= esc($file['title']) ?>" title="Delete <?= esc($file['type']) ?>">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
     <?php else: ?>
         <div class="empty-state-card">
@@ -245,23 +320,77 @@
             </p>
 
             <div class="empty-state-actions">
-                <button type="button" class="btn-empty-cta btn-empty-doc" data-create-type="document" data-template="Blank Document">
+                <a href="<?= site_url('documents/create?template=blank_doc') ?>" class="btn-empty-cta btn-empty-doc">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                     <span>Create Document</span>
-                </button>
-                <button type="button" class="btn-empty-cta btn-empty-sheet" data-create-type="spreadsheet" data-template="Blank Spreadsheet">
+                </a>
+                <a href="<?= site_url('spreadsheets/create?template=blank_sheet') ?>" class="btn-empty-cta btn-empty-sheet">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                     <span>Create Spreadsheet</span>
-                </button>
+                </a>
             </div>
         </div>
     <?php endif; ?>
 </section>
+
+<!-- Rename File Modal -->
+<div id="renameDocModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box">
+        <form id="renameDocForm" method="post" action="">
+            <?= csrf_field() ?>
+            <div class="modal-header">
+                <h4 class="modal-title" id="renameModalTitle">Rename Item</h4>
+                <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close modal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="renameDocTitle" class="form-label">New Title</label>
+                    <input type="text" id="renameDocTitle" name="title" class="form-control" required maxlength="255">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel btn-close-modal">Cancel</button>
+                <button type="submit" class="btn-modal-dismiss" style="background:var(--brand-primary);">Save Name</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete File Confirmation Modal -->
+<div id="deleteDocModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box">
+        <form id="deleteDocForm" method="post" action="">
+            <?= csrf_field() ?>
+            <div class="modal-header">
+                <h4 class="modal-title" id="deleteModalTitle" style="color:#dc2626;">Delete Item</h4>
+                <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close modal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteDocTitle">this item</strong>?</p>
+                <p style="font-size:0.85rem; color:#64748b; margin-top:0.5rem;">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel btn-close-modal">Cancel</button>
+                <button type="submit" class="btn-modal-dismiss" style="background:#dc2626;">Yes, Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <?= $this->endSection() ?>
