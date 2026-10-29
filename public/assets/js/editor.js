@@ -100,6 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
         TextStyle,
         CharacterCount,
         PaginationPlus,
+        FontFamily,
+        FontSize,
     } = window.Tiptap;
 
     const editor = new Editor({
@@ -125,6 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
             Highlight,
             TextStyle,
             Color,
+            FontFamily,
+            FontSize,
             CharacterCount,
             PaginationPlus.configure({
                 pageWidth: initialDims.width,
@@ -279,7 +283,13 @@ document.addEventListener('DOMContentLoaded', function () {
         redo: document.getElementById('btnRedo'),
         link: document.getElementById('btnLink'),
         headingSelect: document.getElementById('headingSelect'),
+        fontFamilySelect: document.getElementById('fontFamilySelect'),
+        fontSizeSelect: document.getElementById('fontSizeSelect'),
+        btnDecreaseFontSize: document.getElementById('btnDecreaseFontSize'),
+        btnIncreaseFontSize: document.getElementById('btnIncreaseFontSize'),
     };
+
+    const FONT_SIZES = ['8pt', '9pt', '10pt', '11pt', '12pt', '14pt', '18pt', '24pt', '30pt', '36pt', '48pt', '72pt'];
 
     // Update active toolbar state based on current cursor selection
     function updateToolbarState() {
@@ -305,6 +315,39 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (editor.isActive('heading', { level: 3 })) buttons.headingSelect.value = 'h3';
             else buttons.headingSelect.value = 'p';
         }
+
+        // Font Family sync with cursor position
+        if (buttons.fontFamilySelect) {
+            const activeFont = editor.getAttributes('textStyle').fontFamily;
+            if (activeFont) {
+                const cleanFont = activeFont.replace(/['"]+/g, '');
+                const matchedOption = Array.from(buttons.fontFamilySelect.options).find(opt => 
+                    opt.value.toLowerCase() === cleanFont.toLowerCase() ||
+                    cleanFont.toLowerCase().includes(opt.value.toLowerCase())
+                );
+                if (matchedOption) {
+                    buttons.fontFamilySelect.value = matchedOption.value;
+                }
+            } else {
+                buttons.fontFamilySelect.value = 'Inter';
+            }
+        }
+
+        // Font Size sync with cursor position
+        if (buttons.fontSizeSelect) {
+            const activeSize = editor.getAttributes('textStyle').fontSize;
+            if (activeSize) {
+                const normalized = activeSize.toLowerCase().includes('pt')
+                    ? activeSize.toLowerCase()
+                    : (parseInt(activeSize, 10) + 'pt');
+                const matchedSize = Array.from(buttons.fontSizeSelect.options).find(opt => opt.value.toLowerCase() === normalized);
+                if (matchedSize) {
+                    buttons.fontSizeSelect.value = matchedSize.value;
+                }
+            } else {
+                buttons.fontSizeSelect.value = '11pt';
+            }
+        }
     }
 
     // Attach Toolbar Action Handlers
@@ -327,6 +370,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (buttons.clearFormat) {
         buttons.clearFormat.addEventListener('click', () => {
             editor.chain().focus().unsetAllMarks().clearNodes().run();
+            if (buttons.fontFamilySelect) buttons.fontFamilySelect.value = 'Inter';
+            if (buttons.fontSizeSelect) buttons.fontSizeSelect.value = '11pt';
+            refreshPaginationLayout();
         });
     }
 
@@ -337,6 +383,71 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (val === 'h1') editor.chain().focus().toggleHeading({ level: 1 }).run();
             else if (val === 'h2') editor.chain().focus().toggleHeading({ level: 2 }).run();
             else if (val === 'h3') editor.chain().focus().toggleHeading({ level: 3 }).run();
+            refreshPaginationLayout();
+        });
+    }
+
+    // Font Family & Size Handlers
+    function applyFontSize(sizeStr) {
+        if (!editor) return;
+        if (sizeStr) {
+            editor.chain().focus().setFontSize(sizeStr).run();
+        } else {
+            editor.chain().focus().unsetFontSize().run();
+        }
+        refreshPaginationLayout();
+    }
+
+    if (buttons.fontFamilySelect) {
+        buttons.fontFamilySelect.addEventListener('change', function () {
+            const val = this.value;
+            if (val) {
+                editor.chain().focus().setFontFamily(val).run();
+            } else {
+                editor.chain().focus().unsetFontFamily().run();
+            }
+            refreshPaginationLayout();
+        });
+    }
+
+    if (buttons.fontSizeSelect) {
+        buttons.fontSizeSelect.addEventListener('change', function () {
+            applyFontSize(this.value);
+        });
+    }
+
+    if (buttons.btnDecreaseFontSize) {
+        buttons.btnDecreaseFontSize.addEventListener('click', () => {
+            const current = (editor.getAttributes('textStyle').fontSize || buttons.fontSizeSelect?.value || '11pt').toLowerCase();
+            let idx = FONT_SIZES.findIndex(s => s.toLowerCase() === current);
+            if (idx === -1) {
+                const num = parseInt(current, 10);
+                idx = FONT_SIZES.findIndex(s => parseInt(s, 10) >= num);
+                if (idx > 0) idx = idx - 1;
+                else idx = 0;
+            } else if (idx > 0) {
+                idx = idx - 1;
+            }
+            const newSize = FONT_SIZES[idx];
+            if (buttons.fontSizeSelect) buttons.fontSizeSelect.value = newSize;
+            applyFontSize(newSize);
+        });
+    }
+
+    if (buttons.btnIncreaseFontSize) {
+        buttons.btnIncreaseFontSize.addEventListener('click', () => {
+            const current = (editor.getAttributes('textStyle').fontSize || buttons.fontSizeSelect?.value || '11pt').toLowerCase();
+            let idx = FONT_SIZES.findIndex(s => s.toLowerCase() === current);
+            if (idx === -1) {
+                const num = parseInt(current, 10);
+                idx = FONT_SIZES.findIndex(s => parseInt(s, 10) > num);
+                if (idx === -1) idx = FONT_SIZES.length - 1;
+            } else if (idx < FONT_SIZES.length - 1) {
+                idx = idx + 1;
+            }
+            const newSize = FONT_SIZES[idx];
+            if (buttons.fontSizeSelect) buttons.fontSizeSelect.value = newSize;
+            applyFontSize(newSize);
         });
     }
 

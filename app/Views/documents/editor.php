@@ -7,10 +7,10 @@
     <meta name="description" content="OfficeSpace Document Editor">
     <title><?= esc($doc['title'] ?? 'Untitled Document') ?> — OfficeSpace Docs</title>
     
-    <!-- Modern Typography: Inter -->
+    <!-- Modern Typography: Inter & Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,700&display=swap" rel="stylesheet">
     
     <!-- CSRF Tokens for Autosave -->
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
@@ -173,6 +173,53 @@
                     <option value="h2">Heading 2</option>
                     <option value="h3">Heading 3</option>
                 </select>
+            </div>
+
+            <div class="toolbar-separator"></div>
+
+            <!-- Font Family -->
+            <div class="toolbar-group">
+                <select id="fontFamilySelect" class="toolbar-select font-family-select" aria-label="Font Family" title="Font">
+                    <option value="Inter" style="font-family: 'Inter', sans-serif;" selected>Inter</option>
+                    <option value="Arial" style="font-family: Arial, sans-serif;">Arial</option>
+                    <option value="Roboto" style="font-family: 'Roboto', sans-serif;">Roboto</option>
+                    <option value="Georgia" style="font-family: Georgia, serif;">Georgia</option>
+                    <option value="Times New Roman" style="font-family: 'Times New Roman', serif;">Times New Roman</option>
+                    <option value="Courier New" style="font-family: 'Courier New', monospace;">Courier New</option>
+                    <option value="Verdana" style="font-family: Verdana, sans-serif;">Verdana</option>
+                    <option value="Trebuchet MS" style="font-family: 'Trebuchet MS', sans-serif;">Trebuchet MS</option>
+                </select>
+            </div>
+
+            <div class="toolbar-separator"></div>
+
+            <!-- Font Size -->
+            <div class="toolbar-group font-size-group">
+                <button type="button" id="btnDecreaseFontSize" class="toolbar-btn btn-font-step" title="Decrease font size" aria-label="Decrease font size">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+                <select id="fontSizeSelect" class="toolbar-select font-size-select" aria-label="Font Size" title="Font size">
+                    <option value="8pt">8</option>
+                    <option value="9pt">9</option>
+                    <option value="10pt">10</option>
+                    <option value="11pt" selected>11</option>
+                    <option value="12pt">12</option>
+                    <option value="14pt">14</option>
+                    <option value="18pt">18</option>
+                    <option value="24pt">24</option>
+                    <option value="30pt">30</option>
+                    <option value="36pt">36</option>
+                    <option value="48pt">48</option>
+                    <option value="72pt">72</option>
+                </select>
+                <button type="button" id="btnIncreaseFontSize" class="toolbar-btn btn-font-step" title="Increase font size" aria-label="Increase font size">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
             </div>
 
             <div class="toolbar-separator"></div>

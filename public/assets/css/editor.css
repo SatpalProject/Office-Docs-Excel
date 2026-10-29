@@ -320,6 +320,64 @@ body.editor-body {
   border-color: var(--brand-docs);
 }
 
+.font-family-select {
+  min-width: 120px;
+  max-width: 145px;
+}
+
+.font-size-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 1px;
+  transition: border-color 150ms ease;
+}
+
+.font-size-group:focus-within,
+.font-size-group:hover {
+  border-color: var(--brand-docs);
+}
+
+.font-size-select {
+  border: none;
+  background: transparent;
+  padding: 0.3rem 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  min-width: 48px;
+  text-align: center;
+}
+
+.btn-font-step {
+  width: 24px;
+  height: 26px;
+  border-radius: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.btn-font-step:hover {
+  background-color: var(--hover-btn-bg);
+  color: #0f172a;
+}
+
+.btn-font-step:active {
+  background-color: var(--active-btn-bg);
+}
+
 .zoom-picker-wrap {
   display: flex;
   align-items: center;
